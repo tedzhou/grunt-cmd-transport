@@ -20,9 +20,16 @@ exports.init = function(grunt) {
     var meta = ast.parseFirst(astCache);
 
     if (!meta) {
-      grunt.log.warn('found non cmd module "' + fileObj.src + '"');
-      // do nothing
-      return;
+			if (!options.ignoreNotCmd) {
+				grunt.fail.warn('found non cmd module "' + fileObj.src + '"');
+				// do nothing
+				return;
+			} else {
+				// copy directly
+				grunt.file.write(fileObj.dest, data);
+				grunt.log.warn('found non cmd module "' + fileObj.src + '"');
+				return;
+			}
     }
 
     if (meta.id) {
@@ -49,6 +56,28 @@ exports.init = function(grunt) {
         return depsSpecified ? v : iduri.parseAlias(options, v);
       }
     });
+
+		// 拿到这个文件未经加工的异步依赖
+		var asyncRequires = ast.getAsyncRequires(astCache);
+		asyncRequires.forEach(function (r) {
+			r.dependencies.forEach(function (d) {
+				if (d.charAt(0) === '.') {
+					d = path.join(path.dirname(fileObj.src), d);
+					d = path.normalize(d);
+					r.dependencies = grunt.util._.union(r.dependencies, parseDependencies(d, options));
+				} else {
+					r.dependencies = grunt.util._.union(r.dependencies, moduleDependencies(d, options));
+				}
+			});
+		});
+
+		// 改ast
+		for (var i = asyncRequires.length - 1; i >= 0; i--) {
+			astCache = ast.modifyAsyncRequire(astCache, asyncRequires[i].requireNode, {
+				dependencies: asyncRequires[i].dependencies
+			});
+		}
+
     data = astCache.print_to_string(options.uglify);
     grunt.file.write(fileObj.dest, addOuterBoxClass(data, options));
 
@@ -90,7 +119,12 @@ exports.init = function(grunt) {
     return data;
   }
 
+	var moduleDeps = {};
+
   function moduleDependencies(id, options) {
+		if (moduleDeps[id]) {
+			return moduleDeps[id];
+		}
     var alias = iduri.parseAlias(options, id);
 
     if (iduri.isAlias(options, id) && alias === id) {
@@ -120,12 +154,20 @@ exports.init = function(grunt) {
     });
 
     if (!fpath) {
-      grunt.fail.warn("can't find module " + alias);
-      return [];
+			if (!options.ignoreNotExistFile) {
+				grunt.fail.warn("can't find module " + alias);
+			} else {
+				grunt.log.warn("can't find module " + alias);
+			}
+			return [];
     }
     if (!grunt.file.exists(fpath)) {
-      grunt.fail.warn("can't find " + fpath);
-      return [];
+			if (!options.ignoreNotExistFile) {
+				grunt.fail.warn("can't find module " + alias);
+			} else {
+				grunt.log.warn("can't find module " + alias);
+			}
+			return [];
     }
     var data = grunt.file.read(fpath);
     var parsed = ast.parse(data);
@@ -137,12 +179,17 @@ exports.init = function(grunt) {
 
     parsed.forEach(function(meta) {
       meta.dependencies.forEach(function(dep) {
-        dep = iduri.absolute(alias, dep);
-        if (!_.contains(deps, dep) && !_.contains(ids, dep) && !_.contains(ids, dep.replace(/\.js$/, ''))) {
-          deps.push(dep);
-        }
+				dep = iduri.absolute(alias, dep);
+				if (!_.contains(deps, dep) && !_.contains(ids, dep) && !_.contains(ids, dep.replace(/\.js$/, ''))) {
+					deps.push(dep);
+				}
+				// recursion
+				deps = grunt.util._.union(deps, moduleDependencies(dep, options));
       });
     });
+
+		// cache it
+		moduleDeps[id] = deps;
     return deps;
   }
 
@@ -156,7 +203,6 @@ exports.init = function(grunt) {
       fpath = iduri.appendext(fpath);
 
       var deps = [];
-      var moduleDeps = {};
 
       if (!grunt.file.exists(fpath)) {
         if (!/\{\w+\}/.test(fpath)) {
@@ -191,7 +237,7 @@ exports.init = function(grunt) {
           if (/\.js$/.test(iduri.appendext(id))) {
             deps = grunt.util._.union(deps, relativeDependencies(id, options, fpath));
           }
-        } else if (!moduleDeps[id]) {
+        } else {
           var alias = iduri.parseAlias(options, id);
           deps.push(alias);
 
@@ -200,7 +246,6 @@ exports.init = function(grunt) {
           if (ext && ext !== '.js') return;
 
           var mdeps = moduleDependencies(id, options);
-          moduleDeps[id] = mdeps;
           deps = grunt.util._.union(deps, mdeps);
         }
       });
