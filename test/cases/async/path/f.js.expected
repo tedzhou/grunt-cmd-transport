@@ -1,0 +1,3 @@
+define("path/f", [ "./e" ], function(require) {
+    require("./e");
+});

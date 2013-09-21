@@ -1,0 +1,9 @@
+/**
+ * @fileoverview:
+ * @author: tedzhou
+ * @date: 13-9-20 下午6:22
+ */
+define("id/c", [ "id/d", "id/e" ], function(require) {
+    require("id/d");
+    require("id/e");
+});

@@ -39,6 +39,24 @@ module.exports = function(grunt) {
         }]
       },
 
+			async: {
+				options: {
+					paths: ['test/cases/async'],
+					debug: false,
+					ignoreNotCmd: true,
+					ignoreNotExistFile: true
+				},
+				files: [
+					{
+						expand: true,
+						cwd: 'test/cases/async',
+						src: ['**/*'],
+						filter: 'isFile',
+						dest: 'test/expected/async'
+					}
+				]
+			},
+
       // single file without any dependencies
       single: {
         // learn file object at:
@@ -240,6 +258,6 @@ module.exports = function(grunt) {
 
   // By default, lint and run all tests.
   grunt.registerTask('default', ['jshint']);
-  grunt.registerTask('test', ['clean', 'transport', 'mochaTest', 'clean']);
+  grunt.registerTask('test', ['clean', 'transport:rely', 'mochaTest', 'clean']);
 
 };

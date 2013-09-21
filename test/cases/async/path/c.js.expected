@@ -1,0 +1,4 @@
+define("path/c", [ "./d", "./e" ], function(require) {
+    require("./d");
+    require("./e");
+});

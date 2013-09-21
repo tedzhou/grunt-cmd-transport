@@ -34,6 +34,7 @@
     "css": "~1.4.0"
   },
   "devDependencies": {
+		"grunt": "~0.4.1",
     "grunt-contrib-jshint": "~0.1.1",
     "grunt-contrib-clean": "~0.4.0",
     "grunt-mocha-test": "~0.4.0",

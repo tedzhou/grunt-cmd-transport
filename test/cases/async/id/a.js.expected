@@ -1,0 +1,9 @@
+define("id/a", [ "jquery", "id/b", "id/f", "id/e" ], function(require) {
+    var $ = require("jquery");
+    var b = require("id/b");
+    require.async([ "id/c", "id/d", "id/e" ], function() {
+        (function(c) {
+            return c;
+        }).apply(this, [].slice.call(arguments, 0, 1));
+    });
+});

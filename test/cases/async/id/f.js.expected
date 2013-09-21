@@ -1,0 +1,3 @@
+define("id/f", [ "id/e" ], function(require) {
+    require("id/e");
+});
