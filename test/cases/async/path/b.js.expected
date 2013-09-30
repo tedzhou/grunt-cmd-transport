@@ -1,4 +1,0 @@
-define("path/b", [ "./f", "./e" ], function(require) {
-    var c = require("./f");
-    return c;
-});

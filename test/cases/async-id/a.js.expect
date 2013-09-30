@@ -1,0 +1,9 @@
+define("a", [ "jquery", "b", "f", "e" ], function(require) {
+    var $ = require("jquery");
+    var b = require("b");
+    require.async([ "c", "d", "e" ], function() {
+        (function(c) {
+            return c;
+        }).apply(this, [].slice.call(arguments, 0, 1));
+    });
+});

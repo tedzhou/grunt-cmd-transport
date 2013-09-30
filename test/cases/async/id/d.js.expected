@@ -1,1 +1,0 @@
-define("id/d", [], function(require) {});

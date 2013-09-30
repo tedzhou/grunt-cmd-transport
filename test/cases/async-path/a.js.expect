@@ -1,4 +1,4 @@
-define("path/a", [ "jquery", "./b", "./f", "./e" ], function(require) {
+define("a", [ "jquery", "./b", "./f", "./e" ], function(require) {
     var $ = require("jquery");
     var b = require("./b");
     require.async([ "./c", "./d", "./e" ], function() {
