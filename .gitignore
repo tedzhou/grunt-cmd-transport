@@ -3,15 +3,5 @@ tmp
 *.iml
 test/expected
 .idea
-/node_modules/clean-css
-/node_modules/css
-/node_modules/grunt
-/node_modules/grunt-cli
-/node_modules/grunt-contrib-clean
-/node_modules/grunt-contrib-jshint
-/node_modules/grunt-mocha-test
-/node_modules/handlebars
-/node_modules/should
-/node_modules/uglify-js
-/node_modules/.DS_Store
-/node_modules/.bin
+*.DS_Store
+/grunt-test.js

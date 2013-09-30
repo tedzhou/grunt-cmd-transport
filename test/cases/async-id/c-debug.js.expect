@@ -1,0 +1,4 @@
+define("c-debug", [ "d-debug", "e-debug" ], function(require) {
+    require("d-debug");
+    require("e-debug");
+});

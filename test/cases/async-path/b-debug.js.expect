@@ -1,0 +1,4 @@
+define("b-debug", [ "./f-debug", "./e-debug" ], function(require) {
+    var c = require("./f-debug");
+    return c;
+});

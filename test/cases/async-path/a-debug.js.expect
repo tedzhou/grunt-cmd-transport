@@ -1,0 +1,9 @@
+define("a-debug", [ "jquery-debug", "./b-debug", "./f-debug", "./e-debug" ], function(require) {
+    var $ = require("jquery-debug");
+    var b = require("./b-debug");
+    require.async([ "./c", "./d", "./e" ], function() {
+        (function(c) {
+            return c;
+        }).apply(this, [].slice.call(arguments, 0, 1));
+    });
+});

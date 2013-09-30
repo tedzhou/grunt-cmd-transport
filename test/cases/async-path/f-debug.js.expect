@@ -1,0 +1,3 @@
+define("f-debug", [ "./e-debug" ], function(require) {
+    require("./e-debug");
+});
