@@ -45,6 +45,7 @@ module.exports = function (grunt) {
 			async_id: {
 				options: {
 					paths: ['test/cases/async-id'],
+					async: true,
 					ignoreNotCmd: true,
 					ignoreNotExistFile: true
 				},
@@ -61,6 +62,7 @@ module.exports = function (grunt) {
 			async_path: {
 				options: {
 					paths: ['test/cases/async-path'],
+					async: true,
 					ignoreNotCmd: true,
 					ignoreNotExistFile: true
 				},

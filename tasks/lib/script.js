@@ -57,31 +57,32 @@ exports.init = function (grunt) {
 			}
 		});
 
-		// 拿到这个文件未经加工的异步依赖
-		var asyncRequires = ast.getAsyncRequires(astCache);
-		asyncRequires.forEach(function (r) {
-			r.dependencies.forEach(function (d) {
-				if (d.charAt(0) === '.') {
-					d = path.join(path.dirname(fileObj.src), d);
-					d = path.normalize(d);
-					r.dependencies = grunt.util._.union(r.dependencies, parseDependencies(d, options));
-				} else {
-					r.dependencies = grunt.util._.union(r.dependencies, moduleDependencies(d, options));
-				}
-			});
-		});
 
-		// 改ast
-		for (var i = asyncRequires.length - 1; i >= 0; i--) {
-			astCache = ast.modifyAsyncRequire(astCache, asyncRequires[i].requireNode, {
-				dependencies: asyncRequires[i].dependencies
+		if(options.async) {
+			// 拿到这个文件未经加工的异步依赖
+			var asyncRequires = ast.getAsyncRequires(astCache);
+			asyncRequires.forEach(function (r) {
+				r.dependencies.forEach(function (d) {
+					if (d.charAt(0) === '.') {
+						d = path.join(path.dirname(fileObj.src), d);
+						d = path.normalize(d);
+						r.dependencies = grunt.util._.union(r.dependencies, parseDependencies(d, options));
+					} else {
+						r.dependencies = grunt.util._.union(r.dependencies, moduleDependencies(d, options));
+					}
+				});
 			});
+
+			// 改ast
+			for (var i = asyncRequires.length - 1; i >= 0; i--) {
+				astCache = ast.modifyAsyncRequire(astCache, asyncRequires[i].requireNode, {
+					dependencies: asyncRequires[i].dependencies
+				});
+			}
 		}
 
 		data = astCache.print_to_string(options.uglify);
 		grunt.file.write(fileObj.dest, addOuterBoxClass(data, options));
-
-
 		// create -debug.js file
 		if (!options.debug) {
 			return;

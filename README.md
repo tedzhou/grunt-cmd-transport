@@ -2,6 +2,19 @@
 
 > Transport javascript into cmd.
 
+## 咳咳
+先随便写点介绍好了，改了几个点:
+1. moduleDependencies 改成递归查到底，比如a依赖b，b依赖c，c依赖d，moduleDependencies(a)会返回[b,c,d];
+2. 增加了`async` option, `require.async`的依赖会被提前，比如还是a依赖b，b依赖c，c依赖d，那么`require.async('a', function(a){})`会改成`require.async(['a','b','c','d'], function(){(function(a){}).apply(this, [].slice.call(arguments, 0, 1));})`
+3. 增加了`ignoreNotCmd`, 非cmd模块会直接跳过，而不会终止任务
+4. 增加了`ignoreNotExistFile`, 本地不存在的模块会直接跳过，而不会中止任务（比如http://外站的模块）
+
+## 暂时的使用方法
+1. 安装`grunt`
+2. 把这个项目拷到`node_modules`下
+3. `npm install`安装依赖(因为我改了`cmd-util`这个模块，所以我把这个模块直接放在本项目的`node_modules`下)
+4. 和其他的grunt项目一样写`Gruntfile.js`
+
 ## Getting Started
 
 This plugin requires Grunt `~0.4.1`
